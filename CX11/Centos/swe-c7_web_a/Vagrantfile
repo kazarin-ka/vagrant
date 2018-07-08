@@ -1,0 +1,41 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "centos/7"
+  
+
+  config.vm.define "cx11" do |cx11|
+    cx11.vm.hostname = "cx11"
+    cx11.vm.network "private_network", ip: "192.168.100.100"
+
+    
+    cx11.vm.provider "virtualbox" do |vb|
+      vb.name = "cx11"
+      vb.cpus = 1
+      vb.memory = "2048"
+    end
+
+    cx11.vm.provision "shell", path: "scripts/c7_web_a.sh"
+    cx11.vm.provision "file", source: "configs/apache.conf", destination: "/tmp/apache.conf"
+    cx11.vm.provision "file", source: "other/info.php", destination: "/tmp/info.php"
+    cx11.vm.provision "file", source: "other/index.html", destination: "/tmp/index.html"
+    
+    cx11.vm.provision "shell", inline: <<-SHELL
+      mv /tmp/apache.conf /etc/httpd/sites-avialable/demo.conf
+      mv /tmp/info.php /var/www/demo/info.php
+      mv /tmp/index.html /var/www/demo/index.html
+      ln -s /etc/httpd/sites-avialable/demo.conf /etc/httpd/sites-enable/demo.conf
+      chown -R apache. /var/www/
+      systemctl restart httpd &> /dev/null
+    SHELL
+    
+    cx11.vm.provision "shell", path: "scripts/result.sh"
+
+  end
+
+  #config.vm.synced_folder "sources/", "/var/www/site" , create: true #, owner: "apache", group: "apache"
+  config.vm.synced_folder "sources/", "/var/www/site", type: "rsync", rsync__auto: true
+
+end
+

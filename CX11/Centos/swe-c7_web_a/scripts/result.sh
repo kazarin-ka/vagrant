@@ -1,0 +1,18 @@
+#!/bin/bash
+MYSQL_ROOT_PASSWORD="Qwerty.123"
+MYSQL_DEMO_DB_NAME="demodb"
+MYSQL_DEMO_DB_USER="demodbuser"
+MYSQL_DEMO_DB_PSWD="demodbpass"
+MYSQL_DB_AREA="localhost"
+PHP_VERSION="56w"
+
+echo "Подготовка сервера закончена!"
+echo "Пароль пользователя Root от СУБД MySQL: $MYSQL_ROOT_PASSWORD"
+echo ""
+echo "Создана демо база $MYSQL_DEMO_DB_NAME для экспериментов. Default charset=utf8"
+echo "Логин $MYSQL_DEMO_DB_USER, пароль $MYSQL_DEMO_DB_PSWD, разрешено подключение с адреса: $MYSQL_DB_AREA"
+echo ""
+echo "Вебсервер: $(systemctl status httpd| grep Active)"
+echo "Сервер СУБД: $(systemctl status mariadb| grep Active)"
+echo "Версия php: $(yum info php"$PHP_VERSION" 2> /dev/null | grep Version | cut -d ":" -f 2)"
+echo "Приятной работы! ^_^ "
